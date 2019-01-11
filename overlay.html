@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        $(function () {
+            let oldValues = {};
+            var socket = io.connect('http://localhost:3000');
+            socket.on('update', function (data) {
+                console.log(data);
+                let overlayContent = data.gameInfo;
+                setContent(overlayContent);
+                if (data.doubles.enabled) {
+                    $(".doubles").show();
+                    let dubsEl = data.doubles.content;
+                    setContent(dubsEl);
+                } else {
+                    $(".doubles").hide();
+                    $(".doubles").text("");
+                }
+            });
+        });
+
+        function setContent(obj) {
+            let keys = Object.keys(obj);
+            keys.forEach((key) => {
+                let value = obj[key];
+                let currentVal = $(`#${key}`).text();
+                if (currentVal !== value) {
+                    $(`#${key}`).fadeOut(400, () => {
+                        $(`#${key}`).text(value);
+                    });
+                    setTimeout(() => {
+                        $(`#${key}`).fadeIn();
+                    }, 500);
+                }
+            });
+        }
+    </script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="overlay">
+        <div id="player1"></div>
+        <div id="player2"></div>
+        <div id="player3" class="doubles"></div>
+        <div id="player4" class="doubles"></div>
+        <div id="score1" class="color-change"></div>
+        <div id="score2" class="color-change"></div>
+        <div id="bracket"></div>
+        <div id="location"></div>
+        <div id="date"></div>
+        <div id="link"></div>
+        <div></div>
+        <img id="logo">
+    </div>
+</body>
+
+</html>

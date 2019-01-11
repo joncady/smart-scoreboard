@@ -1,0 +1,20 @@
+{
+  "name": "scoreboard",
+  "version": "1.0.0",
+  "description": "Dynamic scoreboard with Smash.gg and Challonge support!",
+  "main": "backend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "opn": "^5.4.0",
+    "python-shell": "^1.0.7",
+    "request": "^2.88.0",
+    "smashgg.js": "^2.3.8",
+    "socket.io": "^2.2.0"
+  }
+}

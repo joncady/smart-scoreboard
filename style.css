@@ -1,0 +1,99 @@
+@font-face {
+	src: url("assets/Integral.otf");
+	font-family: 'Integral';
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Integral';
+}
+
+#overlay {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    /* border: 5px black solid; */
+    margin: 0;
+    /* background-image: url("./assets/background.jpg"); */
+    background-size: 100% 100%;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+div {
+    color: white;
+    text-align: center;
+    position: absolute;
+}
+
+#player1 {
+    width: 160px;
+    height: 25px;
+    top: 993px;
+    left: 548px;
+    background-color: black;
+}
+
+#player2 {
+    width: 160px;
+    height: 25px;
+    top: 993px;
+    left: 1285px;
+    background-color: black;
+}
+
+#score1 {
+    top: 993px;
+    left: 535px;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    border-radius: 15px;
+    background-image: linear-gradient(#fffaff, #d3c286);
+}
+
+#score2 {
+    top: 993px;
+    left: 1270px;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    border-radius: 15px;
+    background-color: darkgray;
+    background-image: linear-gradient(#fffaff, #d3c286);     
+}
+
+#bracket {
+    width: 160px;
+    height: 25px;
+    top: 99%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+}
+
+#link {
+    width: 400px;
+    border-radius: 10px;
+    height: 25px;
+    font-size: 18px;
+    top: 10px;
+    left: 10px;
+    background-color: black;
+}
+
+.color-change {
+    color: #36454f;
+}
+
+#logo {
+    position: absolute;
+    width: 150px;
+    content: url("./assets/wga.png");
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
