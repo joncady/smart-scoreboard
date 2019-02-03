@@ -23,7 +23,20 @@
 
         $(function () {
             var socket = io();
-            $('form').submit(function (e) { 
+            socket.on('update', function (data) {
+                let overlayContent = data.gameInfo;
+                setContent(overlayContent);
+                let commentary = data.commInfo;
+                setContent(commentary);
+                if (data.doubles.enabled) {
+                    $(".doubles").show();
+                    let dubsEl = data.doubles.content;
+                    setContent(dubsEl);
+                } else {
+                    $(".doubles").hide();
+                }
+            });
+            $('form').submit(function (e) {
                 e.preventDefault(); // prevents page reloading
                 let player1 = $("#player1").val();
                 let player2 = $("#player2").val();
@@ -68,6 +81,17 @@
                 return false;
             });
         });
+
+        function setContent(obj) {
+            let keys = Object.keys(obj);
+            keys.forEach((key) => {
+                let value = obj[key];
+                let currentVal = $(`#${key}`).val();
+                if (currentVal !== value) {
+                    $(`#${key}`).val(value);
+                }
+            });
+        }
 
         function doSwapNames(type) {
             if (type === "info") {
@@ -148,6 +172,7 @@
             let value = $(target).text();
             $("#duplicates").empty();
             $("#player-name").val(value);
+            $("#player-table").empty();
             getResults();
         }
 
@@ -210,10 +235,44 @@
             });
         }
 
+        function createLocalLink() {
+            fetch(`http://localhost:3000/address`).then((response) => {
+                return response.json();
+            }).then((data) => {
+                let link = `http://${data.address}:${data.port}`;
+                let toCopy = $(`<input id="copy" value="${link}">`);
+                $("#address-area").append(toCopy);
+            });
+        }
+
         function createResults(results) {
             let headers = results.headers;
-            let rows = results.row;
+            let rows = results.rows;
             lastRankings = results;
+            let table = $("#player-table");
+            table.empty();
+            let head = $("<tr>");
+            headers.forEach((item) => {
+                head.append($(`<th>${item}</th>`));
+            });
+            let body = $("<tbody>");
+            rows.forEach((row) => {
+                let singleRow = $("<tr>");
+                row.forEach((item) => {
+                    singleRow.append($(`<td>${item}</td>`));
+                });
+                body.append(singleRow);
+            });
+            table.append(head);
+            table.append(body);
+        }
+
+        function setChat() {
+            let link = $("#stream-value").val();
+            let fullLink = `https://www.twitch.tv/embed/${link}/chat`;
+            let iframe = $('#chat-src');
+            iframe.height("500px");
+            iframe.attr("src", fullLink);
         }
     </script>
     <style>
@@ -240,6 +299,10 @@
         }
         .doubles {
             display: none;
+        }
+        #center-frame {
+            text-align: center;
+            margin: 1rem;
         }
         h4 {
             margin-right: .5rem;
@@ -278,6 +341,9 @@
     <div id="scoreboard">
         <div id="area">
             <h1>Scoreboard</h1>
+            <div id="address-area">
+                <button class="btn btn-primary" onclick="createLocalLink()">View Address</button>
+            </div>
             <form>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item">
@@ -299,6 +365,10 @@
                     <li class="nav-item">
                         <a class="nav-link" id="results-tab" data-toggle="tab" href="#player-results" role="tab"
                             aria-controls="profile" aria-selected="false">Player Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="stream-tab" data-toggle="tab" href="#stream-chat" role="tab"
+                            aria-controls="profile" aria-selected="false">Stream Chat</a>
                     </li>
                 </ul>
                 <div class="tab-content border border-top-0" id="content">
@@ -425,7 +495,8 @@
                             <h4>Challonge</h4>
                             <div>
                                 <div>
-                                    <label for="bracketLink">Paste in the link to the place in bracket (only the last part of the url!)</label>
+                                    <label for="bracketLink">Paste in the link to the place in bracket (only the last
+                                        part of the url!)</label>
                                 </div>
                                 <input id="bracketLink" placeholder="Paste in the link to the place in bracket">
                                 <button class="btn btn-secondary" onclick="showBracket()">Search</button>
@@ -436,25 +507,41 @@
                     </div>
                     <div class="tab-pane fade" id="player-results" role="tabpanel" aria-labelledby="results-tab">
                         <div>
-                            <h4>Player Results (Not entirely functional yet!)</h4>
+                            <h4>Player Results</h4>
                             <div>
                                 <div>
-                                    <label for="player-name">Enter the player name (with correct spelling and capitalizaion) to see their past 10 results</label>
+                                    <label for="player-name">Enter the player name (with correct spelling and
+                                        capitalization) to see their past 10 results</label>
                                 </div>
                                 <input id="player-name" placeholder="Player name">
                                 <select id="game">
+                                    <option>Super Smash Bros. Ultimate</option>
                                     <option>Super Smash Bros. Melee</option>
                                     <option>Super Smash Bros. for Wii U</option>
                                     <option>Project M</option>
                                     <option>Super Smash Bros. Brawl</option>
-                                    <option>Super Smash Bros. Ultimate</option>
                                 </select>
-                                <button class="btn btn-secondary" disabled onclick="getResults($('#player-name').val())">Search</button>
+                                <button class="btn btn-secondary" onclick="getResults($('#player-name').val())">Search</button>
                             </div>
                             <div id="duplicates"></div>
                             <div id="player-message"></div>
-                            <div id="player-results"></div>
+                            <div id="player-results">
+                                <table id="player-table" class="table"></table>
+                            </div>
                         </div>
+                    </div>
+                    <div class="tab-pane fade" id="stream-chat" role="tabpanel" aria-labelledby="stream-tab">
+                        <h1>Stream Chat</h1>
+                        <form>
+                            <div>
+                                <label>Stream</label>
+                                <input id="stream-value">
+                                <button class="btn btn-secondary" onclick="setChat()">Set</button>
+                            </div>
+                            <div id="center-frame">
+                                <iframe id="chat-src" height="0" width="400"></iframe>
+                            </div>
+                        </form>
                     </div>
                     <div id="lower-button" class="border">
                         <button type="submit" class="btn btn-primary">Update!</button>

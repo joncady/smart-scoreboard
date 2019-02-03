@@ -1,11 +1,40 @@
 const express = require('express');
 const request = require("request");
+const ip = require('ip');
 const { PythonShell } = require('python-shell');
 const opn = require('opn');	
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const smashgg = require('smashgg.js');
+const PORT = 3000;
+
+let currentData = {
+	gameInfo: {
+		player1: "",
+		player2: "",
+		score1: 0,
+		score2: 0,
+		bracket: "",
+		link: "",
+		date: "",
+		location: ""
+	},
+	commInfo: {
+		commName1: "",
+		commTwitter1: "",
+		commName2: "",
+		commTwitter2: ""
+	}, doubles: {
+		enabled: false,
+		content: {
+			player3: "",
+			player4: ""
+		}
+	}, rankings: {
+		lastRankings: ""
+	}
+};
 
 app.use(express.static('public'))
 
@@ -32,7 +61,11 @@ app.get('/tournament', function (req, res) {
 	}).catch((err) => {
 		res.send(JSON.stringify({ status: "fail", error: err.message }));
 	});
-})
+});
+
+app.get("/address", (req, res) => {
+	res.send({ address: ip.address(), port: PORT });
+});
 
 app.get("/queue", (req, res) => {
 	let id = req.query.id;
@@ -74,25 +107,30 @@ app.get("/queue", (req, res) => {
 	});
 });
 
-// app.get("/smasher", (req, res) => {
-//     let options = {
-//         args: [req.query.name, req.query.game]
-//     }
+app.get("/smasher", (req, res) => {
+    let options = {
+        args: [req.query.name, req.query.game]
+    }
     
-//     PythonShell.run('scraper/smasher.py', options, (err, results) => {
-//         if (err) throw err;
-// 		let toSend = JSON.parse(results);
-//         res.send(toSend);
-//     });
-// });
+    PythonShell.run('scraper/smasher.py', options, (err, results) => {
+        if (err) {
+			res.send(JSON.stringify({ message: "Smasher not found, but probably exists. Please contact JC at @JC_ssb for development issues.", type: "empty" }));
+		} else {
+			let toSend = JSON.parse(results);
+			res.send(toSend);
+		}
+    });
+});
 
 io.on('connection', function (socket) {
+	io.emit('update', currentData);
 	socket.on('update', function (data) {
+		currentData = data;
 		io.emit('update', data);
 	});
 	console.log('a user connected');
 });
 
-http.listen(3000, function () {
-	opn('http://localhost:3000/', { app: ["chrome", "--new-window"]});
+http.listen(PORT, function () {
+	opn(`http://localhost:${PORT}/`, { app: ["chrome", "--new-window"]});
 });
