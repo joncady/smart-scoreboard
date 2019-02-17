@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="dashboard.js"></script>
+    <link rel="stylesheet" href="./dashboard.css">
+    <title>Scoreboard</title>
+</head>
+
+<body>
+    <div id="scoreboard">
+        <div id="area">
+            <h1>Scoreboard</h1>
+            <div id="address-area">
+                <button class="btn btn-primary" onclick="createLocalLink()">View Address</button>
+            </div>
+            <form>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                            aria-controls="home" aria-selected="true">Game Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                            aria-controls="profile" aria-selected="false">Commentary Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="smashgg-tab" data-toggle="tab" href="#tournament" role="tab"
+                            aria-controls="profile" aria-selected="false">Smash.gg</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="challonge-tab" data-toggle="tab" href="#bracketArea" role="tab"
+                            aria-controls="profile" aria-selected="false">Challonge</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="results-tab" data-toggle="tab" href="#player-results" role="tab"
+                            aria-controls="profile" aria-selected="false">Player Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="stream-tab" data-toggle="tab" href="#stream-chat" role="tab"
+                            aria-controls="profile" aria-selected="false">Stream Chat</a>
+                    </li>
+                </ul>
+                <div class="tab-content border border-top-0" id="content">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div>
+                            <h4>Players</h4>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Player 1</label>
+                                    <input id="player1" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" placeholder="Player 1 Tag"
+                                        autocomplete="off">
+                                </div>
+                                <div class="form-group doubles">
+                                    <label class="left" for="exampleInputPassword3">Player 3</label>
+                                    <input id="player3" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" placeholder="Player 3 Tag"
+                                        autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label class="left">Score 1</label>
+                                    <input type="number" min="0" id="score1" value="0">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Player 2</label>
+                                    <input id="player2" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" placeholder="Player 2 Tag"
+                                        autocomplete="off">
+                                </div>
+                                <div class="form-group doubles">
+                                    <label for="exampleInputPassword4" class="left">Player 4</label>
+                                    <input id="player4" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" placeholder="Player 4 Tag"
+                                        autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label class="left">Score 2</label>
+                                    <input type="number" min="0" id="score2" value="0" width="10">
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary" onclick="doSwapNames('info')">Swap</button>
+                            <label>
+                                <label for="doubles">Doubles?</label>
+                                <input type="checkbox" onchange="showDoubles()">
+                            </label>
+                            <h4>Game Info</h4>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label>Bracket</label>
+                                    <input id="bracket" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)"
+                                        placeholder="Location in Bracket" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>Bracket Link</label>
+                                    <input id="link" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)"
+                                        placeholder="Link for Bracket" autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    <input id="date" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" placeholder="Date"
+                                        autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>Location</label>
+                                    <input id="location" draggable="true" type="text" ondragstart="drag(event)"
+                                        ondrop="drop(event)" ondragover="allowDrop(event)" placeholder="location"
+                                        autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <div>
+                            <h4>Commentators</h4>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Commentator 1</label>
+                                    <input id="commName1" placeholder="Commentator 1 Name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="left" for="exampleInputPassword1">Commentator 1 Twitter</label>
+                                    <input id="commTwitter1" placeholder="Commentator 1 Twitter">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="form-group">
+                                    <label for="exampleInputPassword1">Commentator 2</label>
+                                    <input id="commName2" placeholder="Commentator 2 Name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="left" for="exampleInputPassword1">Commentator 2 Twitter</label>
+                                    <input id="commTwitter2" placeholder="Commentator 2 Twitter">
+                                </div>
+                            </div>
+                            <div>
+                                <button id="challonge" class="btn btn-secondary" style="margin-bottom: 1rem"
+                                    onclick="doSwapNames('comms')">Swap</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="tournament" role="tabpanel" aria-labelledby="profile-tab">
+                        <div>
+                            <h4>Smash.gg</h4>
+                            <div>
+                                <div>
+                                    <label>Enter the tourney slug name (located after "tournament" in the Smash.gg
+                                        link)</label>
+                                </div>
+                                <input id="tournamentName" placeholder="Tourney slug (with '-')">
+                                <button class="btn btn-secondary" onclick="getTournamentInfo()">Search</button>
+                            </div>
+                            <div id="results" class="hide">
+                                <h5>On stream:</h5>
+                                <div id="tourney-name"></div>
+                                <div id="events">
+                                    <select id="event-options"></select>
+                                    <button class="btn btn-secondary" onclick="eventSet()">Set Event</button>
+                                </div>
+                                <div id="message"></div>
+                                <div id="players"></div>
+                                <button class="btn btn-primary" disabled id="select">Set to Scoreboard</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="bracketArea" role="tabpanel" aria-labelledby="profile-tab">
+                        <div>
+                            <h4>Challonge</h4>
+                            <div>
+                                <div>
+                                    <label for="bracketLink">Paste in the link to the place in bracket (only the last
+                                        part of the url!)</label>
+                                </div>
+                                <input id="bracketLink" placeholder="Paste in the link to the place in bracket">
+                                <button class="btn btn-secondary" onclick="showBracket()">Search</button>
+                            </div>
+                            <iframe id="bracket-page" width="100%" height="20" frameborder="0" scrolling="auto"
+                                allowtransparency="true"></iframe>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="player-results" role="tabpanel" aria-labelledby="results-tab">
+                        <div>
+                            <h4>Player Results</h4>
+                            <div>
+                                <div>
+                                    <label for="player-name">Enter the player name (with correct spelling and
+                                        capitalization) to see their past 10 results</label>
+                                </div>
+                                <input id="player-name" placeholder="Player name">
+                                <select id="game">
+                                    <option>Super Smash Bros. Ultimate</option>
+                                    <option>Super Smash Bros. Melee</option>
+                                    <option>Super Smash Bros. for Wii U</option>
+                                    <option>Project M</option>
+                                    <option>Super Smash Bros. Brawl</option>
+                                </select>
+                                <button class="btn btn-secondary"
+                                    onclick="getResults($('#player-name').val())">Search</button>
+                            </div>
+                            <div id="duplicates"></div>
+                            <div id="player-message"></div>
+                            <div id="player-results">
+                                <table id="player-table" class="table"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="stream-chat" role="tabpanel" aria-labelledby="stream-tab">
+                        <h1>Stream Chat</h1>
+                        <form>
+                            <div>
+                                <label>Stream</label>
+                                <input id="stream-value">
+                                <button class="btn btn-secondary" onclick="setChat()">Set</button>
+                            </div>
+                            <div id="center-frame">
+                                <iframe id="chat-src" height="0" width="400"></iframe>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="lower-button" class="border">
+                        <button type="submit" class="btn btn-primary">Update!</button>
+                    </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 const express = require('express');
 const request = require("request");
 const ip = require('ip');
+var cors = require('cors');
 const { PythonShell } = require('python-shell');
 const opn = require('opn');	
 const app = express();
@@ -8,6 +9,7 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const smashgg = require('smashgg.js');
 const PORT = 3000;
+app.use(cors());
 
 let currentData = {
 	gameInfo: {
@@ -36,11 +38,7 @@ let currentData = {
 	}
 };
 
-app.use(express.static('public'))
-
-app.get('/', function (req, res) {
-	res.sendFile(__dirname + '/index.html');
-});
+app.use(express.static('public'));
 
 app.get('/tournament', function (req, res) {
 	var { Tournament } = smashgg;
@@ -109,11 +107,13 @@ app.get("/queue", (req, res) => {
 
 app.get("/smasher", (req, res) => {
     let options = {
-        args: [req.query.name, req.query.game]
+		args: [req.query.name, req.query.game],
+		scriptPath: __dirname + "/scraper/"
     }
-    
-    PythonShell.run('scraper/smasher.py', options, (err, results) => {
+    console.log("Running scrape for " + req.query.name);
+    PythonShell.run('smasher.py', options, (err, results) => {
         if (err) {
+			console.log(err.message)
 			res.send(JSON.stringify({ message: "Smasher not found, but probably exists. Please contact JC at @JC_ssb for development issues.", type: "empty" }));
 		} else {
 			let toSend = JSON.parse(results);
@@ -132,5 +132,5 @@ io.on('connection', function (socket) {
 });
 
 http.listen(PORT, function () {
-	opn(`http://localhost:${PORT}/`, { app: ["chrome", "--new-window"]});
+	opn(`file://${__dirname}/../dashboard/index.html`, { app: ["chrome", "--new-window"]});
 });

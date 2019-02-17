@@ -1,0 +1,71 @@
+#scoreboard {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hide {
+    display: none;
+}
+
+#content {
+    padding: 0.5rem;
+}
+
+body {
+    height: 100vh;
+}
+
+label {
+    margin-right: 1rem;
+}
+
+#area {
+    width: 80%;
+}
+
+.doubles {
+    display: none;
+}
+
+#center-frame {
+    text-align: center;
+    margin: 1rem;
+}
+
+h4 {
+    margin-right: .5rem;
+    margin-top: .5rem;
+}
+
+input[type="number"] {
+    width: 5em;
+}
+
+.frame {
+    display: none;
+}
+
+.input-row {
+    display: flex;
+    flex-direction: column;
+}
+
+#lower-button {
+    text-align: center;
+    padding: 0.5rem;
+}
+
+@media (min-width: 600px) {
+    .input-row {
+        flex-direction: row;
+    }
+    .left {
+        margin-left: 1rem;
+    }
+}
+
+input:hover[type="text"] {
+    cursor: grab;
+}
