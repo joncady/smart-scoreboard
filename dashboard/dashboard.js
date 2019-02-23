@@ -5,9 +5,10 @@ let tournamentId;
 let players;
 let phase;
 let lastRankings;
+let socket;
 
 $(function () {
-    var socket = io('http://localhost:3000');
+    socket = io();
     socket.on('update', function (data) {
         let overlayContent = data.gameInfo;
         setContent(overlayContent);
@@ -23,56 +24,56 @@ $(function () {
             $(".doubles").hide();
         }
     });
-    $('form').submit(function (e) {
-        e.preventDefault(); // prevents page reloading
-        let player1 = $("#player1").val();
-        let player2 = $("#player2").val();
-        let player3 = $("#player3").val();
-        let player4 = $("#player4").val();
-        let team1 = $("#team1").val();
-        let team2 = $("#team2").val();
-        let score1 = $("#score1").val();
-        let score2 = $("#score2").val();
-        let link = $("#link").val();
-        let bracket = $("#bracket").val();
-        let date = $("#date").val();
-        let location = $("#location").val();
-        let comm1 = $("#commName1").val();
-        let commTwit1 = $("#commTwitter1").val();
-        let comm2 = $("#commName2").val();
-        let commTwit2 = $("#commTwitter2").val();
-        socket.emit('update', {
-            gameInfo: {
-                player1: player1,
-                player2: player2,
-                score1: score1,
-                score2: score2,
-                bracket: bracket,
-                link: link,
-                date: date,
-                location: location
-            },
-            commInfo: {
-                commName1: comm1,
-                commTwitter1: commTwit1,
-                commName2: comm2,
-                commTwitter2: commTwit2
-            }, doubles: {
-                enabled: doubles,
-                content: {
-                    player3: player3,
-                    player4: player4
-                }
-            }, teams: {
-                team1: team1,
-                team2: team2
-            }, rankings: {
-                lastRankings: lastRankings
-            }
-        });
-        return false;
-    });
 });
+
+function sendData(event) {
+    event.preventDefault();
+    let player1 = $("#player1").val();
+    let player2 = $("#player2").val();
+    let player3 = $("#player3").val();
+    let player4 = $("#player4").val();
+    let team1 = $("#team1").val();
+    let team2 = $("#team2").val();
+    let score1 = $("#score1").val();
+    let score2 = $("#score2").val();
+    let link = $("#link").val();
+    let bracket = $("#bracket").val();
+    let date = $("#date").val();
+    let location = $("#location").val();
+    let comm1 = $("#commName1").val();
+    let commTwit1 = $("#commTwitter1").val();
+    let comm2 = $("#commName2").val();
+    let commTwit2 = $("#commTwitter2").val();
+    socket.emit('update', {
+        gameInfo: {
+            player1: player1,
+            player2: player2,
+            score1: score1,
+            score2: score2,
+            bracket: bracket,
+            link: link,
+            date: date,
+            location: location
+        },
+        commInfo: {
+            commName1: comm1,
+            commTwitter1: commTwit1,
+            commName2: comm2,
+            commTwitter2: commTwit2
+        }, doubles: {
+            enabled: doubles,
+            content: {
+                player3: player3,
+                player4: player4
+            }
+        }, teams: {
+            team1: team1,
+            team2: team2
+        }, rankings: {
+            lastRankings: lastRankings
+        }
+    });
+}
 
 function setContent(obj) {
     let keys = Object.keys(obj);
@@ -110,7 +111,7 @@ function getTournamentInfo() {
     $("#select").attr("disabled", true);
     let tournamentSlug = $('#tournamentName').val();
     $("#message").text("");
-    fetch(`http://localhost:3000/tournament?name=${tournamentSlug}`).then((response) => {
+    fetch(`/tournament?name=${tournamentSlug}`).then((response) => {
         return response.json();
     }).then((data) => {
         if (data.status == "success") {
@@ -132,7 +133,7 @@ function getTournamentInfo() {
 function eventSet() {
     $("#select").attr("disabled", true);
     let eventId = $("#event-options").val();
-    let url = `http://localhost:3000/queue?id=${eventId}&tournament=${tournamentId}`;
+    let url = `/queue?id=${eventId}&tournament=${tournamentId}`;
     fetch(url).then((response) => {
         return response.json();
     }).then((data) => {
@@ -212,7 +213,7 @@ function getResults() {
     $("#player-message").empty();
     let playerName = $("#player-name").val();
     let game = $("#game").val();
-    let url = `http://localhost:3000/smasher?name=${playerName}&game=${game}`;
+    let url = `/smasher?name=${playerName}&game=${game}`;
     fetch(url).then((response) => {
         return response.json();
     }).then((data) => {
@@ -233,7 +234,7 @@ function getResults() {
 }
 
 function createLocalLink() {
-    fetch(`http://localhost:3000/address`).then((response) => {
+    fetch(`/address`).then((response) => {
         return response.json();
     }).then((data) => {
         let link = `http://${data.address}:${data.port}`;
@@ -280,7 +281,7 @@ function confirmMatch() {
             doubles: doubles
         }
     }
-    fetch("http://localhost:3000/match", {
+    fetch("/match", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -10,6 +10,7 @@
 
 #overlay {
     position: relative;
+    display: none;
     width: 1920px;
     height: 1080px;
     /* border: 5px black solid; */
