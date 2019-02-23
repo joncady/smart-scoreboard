@@ -1,0 +1,96 @@
+@font-face {
+	src: url("assets/Integral.otf");
+	font-family: 'Integral';
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Integral';
+}
+
+#overlay {
+    position: relative;
+    top: -150px;
+    width: 1920px;
+    height: 1080px;
+    /* border: 5px black solid; */
+    margin: 0;
+    background-image: url("./assets/singles.png");
+    background-size: 100% 100%;
+}
+
+.lower {
+    animation: lower-in 1.5s ease forwards;
+}
+
+@keyframes lower-in {
+    from { top: -150px; }
+    to { top: 0px; }
+} 
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+div {
+    color: white;
+    text-align: center;
+    position: absolute;
+    font-size: 20px;    
+}
+
+#player1 {
+    width: 250px;
+    height: 25px;
+    top: 63px;
+    left: 430px;
+}
+
+#player2 {
+    width: 250px;
+    height: 25px;
+    top: 63px;
+    left: 1250px;
+}
+
+#score1 {
+    top: 63px;
+    left: 735px;
+    width: 30px;
+    height: 25px;
+    font-size: 20px;
+}
+
+#score2 {
+    top: 63px;
+    left: 1170px;
+    width: 30px;
+    height: 25px;
+    font-size: 20px; 
+}
+
+#bracket {
+    width: 250px;
+    height: 25px;
+    top: 63px;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+#team1, #team2 {
+    display: none;
+    width: 35px;
+    border-radius: 50%;
+    position: absolute;
+}
+
+#team1 {
+    left: 390px;
+    top: 60px;
+}
+
+#team2 {
+    left: 1500px;
+    top: 60px;
+}

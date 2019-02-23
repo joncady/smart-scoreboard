@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        $(function () {
+            let teamValues = {
+                team1: "",
+                team2: ""
+            }
+            $("#overlay").addClass("lower");
+            let socket = io.connect('http://localhost:3000');
+            socket.on('update', function (data) {
+                let overlayContent = data.gameInfo;
+                setContent(overlayContent);
+                if (data.doubles.enabled) {
+                    $(".doubles").show();
+                    let dubsEl = data.doubles.content;
+                    setContent(dubsEl);
+                } else {
+                    $(".doubles").hide();
+                    $(".doubles").text("");
+                }
+                let teams = data.teams;
+                if (teams.team1 !== "") {
+                    if (teams.team1 !== teamValues.team1) {
+                        $("#team1").fadeOut(500, () => {
+                            $("#team1").attr("src", "assets/school_logos/" + teams.team1).fadeIn(400);
+                        });
+                        teamValues.team1 = teams.team1;
+                    }
+                } else {
+                    $("#team1").fadeOut(400, () => $("#team1").removeAttr("src"));
+                    teamValues.team1 = "";
+                }
+                if (teams.team2 !== "") {
+                    if (teams.team2 !== teamValues.team2) {
+                        $("#team2").fadeOut(500, () => {
+                            $("#team2").attr("src", "assets/school_logos/" + teams.team2).fadeIn(400);
+                        });
+                        teamValues.team2 = teams.team2;
+                    }
+                } else {
+                    $("#team2").fadeOut(400, () => $("#team2").removeAttr("src"));
+                    teamValues.team2 = "";
+                }
+            });
+        });
+
+        function setContent(obj) {
+            let keys = Object.keys(obj);
+            keys.forEach((key) => {
+                let value = obj[key];
+                let currentVal = $(`#${key}`).text();
+                if (currentVal !== value) {
+                    $(`#${key}`).fadeOut(400, () => {
+                        $(`#${key}`).text(value);
+                    });
+                    setTimeout(() => {
+                        $(`#${key}`).fadeIn();
+                    }, 500);
+                }
+            });
+        }
+    </script>
+    <title>Singles</title>
+</head>
+
+<body>
+    <div id="overlay">
+        <div id="player1"></div>
+        <div id="player2"></div>
+        <div id="player3" class="doubles"></div>
+        <div id="player4" class="doubles"></div>
+        <div id="score1" class="color-change"></div>
+        <div id="score2" class="color-change"></div>
+        <div id="bracket"></div>
+        <div id="location"></div>
+        <div id="date"></div>
+        <img id="team1">
+        <img id="team2">
+    </div>
+</body>
+
+</html>

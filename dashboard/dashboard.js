@@ -13,6 +13,8 @@ $(function () {
         setContent(overlayContent);
         let commentary = data.commInfo;
         setContent(commentary);
+        let teams = data.teams;
+        setContent(teams);
         if (data.doubles.enabled) {
             $(".doubles").show();
             let dubsEl = data.doubles.content;
@@ -27,6 +29,8 @@ $(function () {
         let player2 = $("#player2").val();
         let player3 = $("#player3").val();
         let player4 = $("#player4").val();
+        let team1 = $("#team1").val();
+        let team2 = $("#team2").val();
         let score1 = $("#score1").val();
         let score2 = $("#score2").val();
         let link = $("#link").val();
@@ -59,6 +63,9 @@ $(function () {
                     player3: player3,
                     player4: player4
                 }
+            }, teams: {
+                team1: team1,
+                team2: team2
             }, rankings: {
                 lastRankings: lastRankings
             }
@@ -168,9 +175,14 @@ function setScoreboard() {
     $('#bracket').val(phase);
 }
 
-function showDoubles() {
-    doubles = !doubles;
-    $(".doubles").toggle();
+function show(type) {
+    if (type === "doubles") {
+        doubles = !doubles;
+        $(".doubles").toggle();
+    } else {
+        console.log("eneter");
+        $(".teams").toggle();
+    }
 }
 
 function showBracket() {
@@ -250,6 +262,31 @@ function createResults(results) {
     });
     table.append(head);
     table.append(body);
+}
+
+function confirmMatch() {
+    let player1 = $("#player1").val();
+    let player2 = $("#player2").val();
+    let player3 = $("#player3").val();
+    let player4 = $("#player4").val();
+    let bracket = $("#bracket").val();
+    let data = {
+        match: {
+            player1: player1,
+            player2: player2,
+            player3: player3,
+            player4: player4,
+            bracket: bracket,
+            doubles: doubles
+        }
+    }
+    fetch("http://localhost:3000/match", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
 }
 
 function setChat() {

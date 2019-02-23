@@ -77,6 +77,16 @@
                                     <label class="left">Score 1</label>
                                     <input type="number" min="0" id="score1" value="0">
                                 </div>
+                                <div class="form-group teams">
+                                    <label for="team1" class="left">Team 1</label>
+                                    <select id="team1">
+                                        <option></option>
+                                        <option value="seattle.png">Seattle</option>
+                                        <option value="tacoma.jpg">Tacoma</option>
+                                        <option value="centralia.png">Centralia</option>
+                                        <option value="portland.png">Portland</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="input-row">
                                 <div class="form-group">
@@ -95,12 +105,27 @@
                                     <label class="left">Score 2</label>
                                     <input type="number" min="0" id="score2" value="0" width="10">
                                 </div>
+                                <div class="form-group teams">
+                                    <label for="team2" class="left">Team 2</label>
+                                    <select id="team2">
+                                        <option></option>
+                                        <option value="seattle.png">Seattle</option>
+                                        <option value="tacoma.jpg">Tacoma</option>
+                                        <option value="centralia.png">Centralia</option>
+                                        <option value="portland.png">Portland</option>
+                                    </select>
+                                </div>
                             </div>
                             <button class="btn btn-secondary" onclick="doSwapNames('info')">Swap</button>
                             <label>
                                 <label for="doubles">Doubles?</label>
-                                <input type="checkbox" onchange="showDoubles()">
+                                <input type="checkbox" onchange="show('doubles')">
                             </label>
+                            <label>
+                                <label for="teams">Teams?</label>
+                                <input type="checkbox" onchange="show('teams')">
+                            </label>
+                            <button class="btn btn-primary" onclick="confirmMatch()">Confirm Match</button>
                             <h4>Game Info</h4>
                             <div class="input-row">
                                 <div class="form-group">
@@ -226,7 +251,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="stream-chat" role="tabpanel" aria-labelledby="stream-tab">
-                        <h1>Stream Chat</h1>
+                        <h4>Stream Chat</h4>
                         <form>
                             <div>
                                 <label>Stream</label>

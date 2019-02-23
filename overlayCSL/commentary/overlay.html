@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        $(function () {
+            let oldValues = {};
+            var socket = io.connect('http://localhost:3000');
+            socket.on('update', function (data) {
+                let overlayContent = data.commInfo;
+                setContent(overlayContent);
+            });
+        });
+
+        function setContent(obj) {
+            let keys = Object.keys(obj);
+            keys.forEach((key) => {
+                let value = obj[key];
+                let currentVal = $(`#${key}`).text();
+                if (currentVal !== value) {
+                    $(`#${key}`).fadeOut(400, () => {
+                        $(`#${key}`).text(value);
+                    });
+                    setTimeout(() => {
+                        $(`#${key}`).fadeIn();
+                    }, 500);
+                }
+            });
+        }
+    </script>
+    <title>Commentary</title>
+</head>
+
+<body>
+    <div id="overlay">
+        <div id="commName1"></div>
+        <div id="div1">/</div>
+        <div id="commTwitter1"></div>
+        <div id="commName2"></div>
+        <div id="div2">/</div>
+        <div id="commTwitter2"></div>
+    </div>
+</body>
+
+</html>
